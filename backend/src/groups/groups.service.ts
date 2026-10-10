@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateToken, hashToken } from '../common/utils/token.js';
 import { CreateGroupDto } from './dto/create-group.dto.js';
+import { UpdateGroupDto } from './dto/change-group.dto.js';
 
 @Injectable()
 export class GroupsService {
@@ -34,5 +35,13 @@ export class GroupsService {
     });
     if (!group) throw new NotFoundException('Group not found');
     return group;
+  }
+
+  update(groupId: string, dto: UpdateGroupDto) {
+    return this.prisma.group.update({
+      where: { id: groupId },
+      data: { name: dto.name },
+      select: { id: true, name: true },
+    });
   }
 }
