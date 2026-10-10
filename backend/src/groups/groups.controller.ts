@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto.js';
 import { GroupsService } from './groups.service.js';
 
@@ -9,5 +9,10 @@ export class GroupsController {
   @Post()
   create(@Body() dto: CreateGroupDto) {
     return this.groupsService.create(dto);
+  }
+
+  @Get(':viewToken')
+  findOne(@Param('viewToken') viewToken: string) {
+    return this.groupsService.findByViewToken(viewToken);
   }
 }

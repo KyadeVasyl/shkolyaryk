@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateToken, hashToken } from '../common/utils/token.js';
 import { CreateGroupDto } from './dto/create-group.dto.js';
@@ -20,5 +20,19 @@ export class GroupsService {
     });
 
     return { id: group.id, name: group.name, viewToken, editToken };
+  }
+  async findByViewToken(viewToken: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { viewToken },
+      select: {
+        id: true,
+        name: true,
+        scheduleUpdatedAt: true,
+        oddWeekAnchor: true,
+        lessons: { orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }] },
+      },
+    });
+    if (!group) throw new NotFoundException('Group not found');
+    return group;
   }
 }
